@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
+<html lang="es"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Control de Gastos de Obra · U$S</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -251,37 +250,35 @@ footer b{color:var(--ink)} footer code{background:#e3e8ee;padding:1px 5px;border
 </head>
 <body>
 
-<div class="pub-modal-bg" id="pubModalBg">
+<div class="pub-modal-bg open" id="pubModalBg">
   <div class="pub-modal">
     <h3>Publicar en GitHub</h3>
     <p>El dashboard se sube directamente al repositorio. El token queda solo en tu navegador y nunca se envía a ningún servidor externo.</p>
     <label for="pubToken">GitHub Personal Access Token (classic · scope: repo)</label>
     <input type="password" id="pubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
     <div class="pub-row">
-      <button class="pub-btn-go" id="pubBtnGo" onclick="doPublish()">↑ Publicar ahora</button>
+      <button class="pub-btn-go" id="pubBtnGo" onclick="doPublish()" disabled="">↑ Publicar ahora</button>
       <button class="pub-btn-cancel" onclick="closePubModal()">Cancelar</button>
     </div>
-    <div class="pub-status" id="pubStatus"></div>
-    <div class="pub-link" id="pubLink"><a href="https://livereports.github.io/construction/" target="_blank">→ Ver dashboard publicado</a></div>
+    <div class="pub-status load" id="pubStatus">Preparando el archivo…</div>
+    <div class="pub-link" id="pubLink" style="display: none;"><a href="https://livereports.github.io/construction/" target="_blank">→ Ver dashboard publicado</a></div>
   </div>
 </div>
 
 
-<div id="loginScreen">
+<div id="loginScreen" style="display: none;">
   <div class="login-box">
     <div class="login-logo">Panel de Gastos de Obra</div>
     <div class="login-sub">Ingresá la clave de acceso para continuar.</div>
     <label class="login-label" for="pwdInput">Clave de acceso</label>
-    <input class="login-input" type="password" id="pwdInput"
-           placeholder="••••••••••••" autocomplete="current-password"
-           onkeydown="if(event.key==='Enter')checkPwd()">
+    <input class="login-input" type="password" id="pwdInput" placeholder="••••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')checkPwd()">
     <button class="login-btn" onclick="checkPwd()">Ingresar →</button>
     <div class="login-err" id="loginErr"></div>
     <div class="login-footer">Control de obra · acceso restringido</div>
   </div>
 </div>
 
-<div class="wrap">
+<div class="wrap" style="visibility: visible;">
 
 <!-- HEADER -->
 <header>
@@ -292,25 +289,26 @@ footer b{color:var(--ink)} footer code{background:#e3e8ee;padding:1px 5px;border
   </div>
   <div class="io">
     <label class="btn" for="file-input">↑ Cargar Excel</label>
+      <button class="btn" style="background:#2E7D32;border-color:#2E7D32" onclick="downloadIndex()" id="btnDownload" disabled="">↓ Bajar index actualizado</button>
       <button class="btn" style="background:var(--teal);border-color:var(--teal)" onclick="openPubModal()">⬡ Publicar en GitHub</button>
     <input id="file-input" type="file" accept=".xlsx,.xls" style="display:none">
-    <div class="status" id="status">Cargando…</div>
+    <div class="status" id="status">Datos: <b>cargados</b> (1146 pagos)</div>
   </div>
 </header>
 
 <!-- FILTROS -->
 <div class="filter-bar">
-  <div class="fg"><label>Proyecto</label><div class="pills" id="fProy"></div></div>
-  <div class="fg"><label>Circuito</label><div class="pills" id="fCirc"></div></div>
+  <div class="fg"><label>Proyecto</label><div class="pills" id="fProy"><button class="pill on">Melian 3899</button><button class="pill">Paroissien 2</button><button class="pill">Q2</button><button class="pill">Vilela 3399</button></div></div>
+  <div class="fg"><label>Circuito</label><div class="pills" id="fCirc"><button class="pill on ">Todos</button><button class="pill">Circuito A (x1)</button><button class="pill">Circuito B (x99)</button></div></div>
   <div class="fg">
     <label>Período</label>
     <div class="date-row">
-      <input type="date" id="dDesde"><span class="sep">→</span>
-      <input type="date" id="dHasta">
+      <input type="date" id="dDesde" min="2023-01-05" max="2026-07-08"><span class="sep">→</span>
+      <input type="date" id="dHasta" min="2023-01-05" max="2026-07-08">
       <button class="btn-lnk" id="btnReset">Todo el período</button>
     </div>
   </div>
-  <div class="fsumm" id="fsumm"></div>
+  <div class="fsumm" id="fsumm"><b>65 pagos</b> · $340.992<br><span style="font-size:10.5px;color:var(--muted2)">Melian 3899 · Ambos circuitos · 2023-06-22 → 2026-07-08</span></div>
 </div>
 
 <!-- MEDIDOR -->
@@ -322,8 +320,8 @@ footer b{color:var(--ink)} footer code{background:#e3e8ee;padding:1px 5px;border
 </div>
 
 <div class="ledger">
-  <div class="ltop"><span class="ltitle">Composición Circuito A / B</span><span class="lscope" id="lscope"></span></div>
-  <div class="meter" id="meter"></div>
+  <div class="ltop"><span class="ltitle">Composición Circuito A / B</span><span class="lscope" id="lscope">Melian 3899 · 2023-06-22 → 2026-07-08</span></div>
+  <div class="meter" id="meter"><div class="seg a" style="width:54.0015601539039%">54.0%<span>$184.141</span></div><div class="seg b" style="width:45.9984398460961%">46.0%<span>$156.851</span></div></div>
   <div class="mfoot">
     <span><span class="dot" style="background:var(--ca)"></span>Circuito A (x1)</span>
     <span><span class="dot" style="background:var(--cb)"></span>Circuito B (x99)</span>
@@ -332,14 +330,14 @@ footer b{color:var(--ink)} footer code{background:#e3e8ee;padding:1px 5px;border
 </div>
 
 <!-- KPIs -->
-<div class="kpis" id="kpis"></div>
+<div class="kpis" id="kpis"><div class="kpi ink"><div class="kl">Gasto total</div><div class="kv">$340.992</div><div class="ks">jun 2023 → jul 2026</div></div><div class="kpi ca"><div class="kl">Circuito A (x1)</div><div class="kv">$184.141</div><div class="ks">54.0%</div></div><div class="kpi or"><div class="kl">Circuito B (x99)</div><div class="kv">$156.851</div><div class="ks">46.0%</div></div><div class="kpi tl"><div class="kl">Último mes</div><div class="kv">$4.222</div><div class="ks">jul-2026</div></div></div>
 
 <!-- EVOLUCIÓN MENSUAL -->
 <div class="row-full">
   <div class="card">
     <div class="ch">Evolución mensual del gasto (U$S)</div>
     <div class="cs">Barras = gasto mensual · línea = acumulado · responde a todos los filtros</div>
-    <div class="cv" style="height:230px"><canvas id="chMensual"></canvas></div>
+    <div class="cv" style="height:230px"><canvas id="chMensual" width="1282" height="230" style="display: block; box-sizing: border-box; height: 230px; width: 1282px;"></canvas></div>
   </div>
 </div>
 
@@ -348,12 +346,12 @@ footer b{color:var(--ink)} footer code{background:#e3e8ee;padding:1px 5px;border
   <div class="card">
     <div class="ch">Gasto por rubro</div>
     <div class="cs">Top 12 · % del total filtrado</div>
-    <div class="cv" style="height:310px"><canvas id="chRubros"></canvas></div>
+    <div class="cv" style="height:310px"><canvas id="chRubros" width="618" height="310" style="display: block; box-sizing: border-box; height: 310px; width: 618px;"></canvas></div>
   </div>
   <div class="card">
     <div class="ch">Top 15 proveedores</div>
     <div class="cs">% del total filtrado</div>
-    <div class="cv" style="height:310px"><canvas id="chProv"></canvas></div>
+    <div class="cv" style="height:310px"><canvas id="chProv" width="618" height="310" style="display: block; box-sizing: border-box; height: 310px; width: 618px;"></canvas></div>
   </div>
 </div>
 
@@ -362,28 +360,319 @@ footer b{color:var(--ink)} footer code{background:#e3e8ee;padding:1px 5px;border
   <div class="card">
     <div class="ch">Forma de pago</div>
     <div class="cs">Distribución sobre total filtrado</div>
-    <div class="cv" style="height:230px"><canvas id="chForma"></canvas></div>
+    <div class="cv" style="height:230px"><canvas id="chForma" width="618" height="230" style="display: block; box-sizing: border-box; height: 230px; width: 618px;"></canvas></div>
   </div>
   <div class="card">
     <div class="ch">Circuito A / B</div>
     <div class="cs">Distribución · ignora filtro de circuito</div>
-    <div class="cv" style="height:230px"><canvas id="chCirc"></canvas></div>
+    <div class="cv" style="height:230px"><canvas id="chCirc" width="618" height="230" style="display: block; box-sizing: border-box; height: 230px; width: 618px;"></canvas></div>
   </div>
 </div>
 
 <!-- ═══ SECCIÓN PRESUPUESTO ═══ -->
 <div class="section-divider">
   <h2>Comparativa Presupuesto vs Real</h2>
-  <span class="ppto-badge" id="pptoBadge"></span>
+  <span class="ppto-badge" id="pptoBadge" style="background: var(--teal);">Melian 3899</span>
 </div>
-<div id="pptoSection"></div>
+<div id="pptoSection">
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:14px;align-items:stretch;margin-bottom:14px">
+      <div class="card" style="padding:16px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div class="ch" style="text-align:center;font-size:11.5px;margin-bottom:6px">Avance del presupuesto</div>
+        <div class="gauge-wrap" style="width:100%">
+          <canvas id="chGauge" class="gauge-canvas" width="240" height="134"></canvas>
+          <div class="gauge-pct" id="gaugePct" style="color: rgb(46, 134, 171);">11.4%</div>
+          <div class="gauge-usd" id="gaugeUsd">$340.743 ejecutados</div>
+          <div class="gauge-of" id="gaugeOf">de $2.977.858 presupuestados</div>
+        </div>
+      </div>
+      <div class="ppto-kpis"><div class="pk ink2">
+        <div class="pkl">Presupuesto total</div>
+        <div class="pkv ">$2.977.858</div>
+        <div class="pks">2026-03 → 2028-03</div></div><div class="pk blue">
+        <div class="pkl">Gasto real acumulado</div>
+        <div class="pkv ">$340.743</div>
+        <div class="pks">11.4% del presupuesto total</div></div><div class="pk amber">
+        <div class="pkl">Saldo pendiente</div>
+        <div class="pkv amber">$2.637.115</div>
+        <div class="pks">Por ejecutar</div></div><div class="pk green">
+        <div class="pkl">% Ejecución global</div>
+        <div class="pkv green">11.4%</div>
+        <div class="pks">Dentro del presupuesto</div></div>
+      </div>
+    </div>
+    <div class="table-wrap" style="margin-bottom:14px">
+      <table>
+        <thead><tr>
+          <th style="text-align:left;min-width:180px">Rubro</th>
+          <th>Presupuesto total</th>
+          <th>Real ejecutado</th>
+          <th>% Ejecución</th>
+          <th>Estado</th>
+          <th>Saldo</th>
+        </tr></thead>
+        <tbody><tr>
+      <td>TAREAS PRELIMINARES</td>
+      <td>$31.056</td>
+      <td>$7.481</td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--amber)">24.1%</div>
+        <div class="pbar"><div class="pbar-fill" style="width:24.1%;background:var(--amber)"></div></div>
+      </td>
+      <td class="amber">Iniciado</td>
+      <td>$23.575</td>
+    </tr><tr>
+      <td>MOVIMIENTO DE SUELOS</td>
+      <td>$40.074</td>
+      <td>$15.939</td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--amber)">39.8%</div>
+        <div class="pbar"><div class="pbar-fill" style="width:39.8%;background:var(--amber)"></div></div>
+      </td>
+      <td class="amber">Iniciado</td>
+      <td>$24.135</td>
+    </tr><tr>
+      <td>ESTRUCTURA</td>
+      <td>$805.350</td>
+      <td>$282.981</td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--amber)">35.1%</div>
+        <div class="pbar"><div class="pbar-fill" style="width:35.1%;background:var(--amber)"></div></div>
+      </td>
+      <td class="amber">Iniciado</td>
+      <td>$522.369</td>
+    </tr><tr>
+      <td>MAMPOSTERÍA</td>
+      <td>$96.750</td>
+      <td>$20.595</td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--amber)">21.3%</div>
+        <div class="pbar"><div class="pbar-fill" style="width:21.3%;background:var(--amber)"></div></div>
+      </td>
+      <td class="amber">Iniciado</td>
+      <td>$76.155</td>
+    </tr><tr>
+      <td>INSTALACIONES</td>
+      <td>$486.769</td>
+      <td>$9.683</td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--amber)">2.0%</div>
+        <div class="pbar"><div class="pbar-fill" style="width:2.0%;background:var(--amber)"></div></div>
+      </td>
+      <td class="amber">Iniciado</td>
+      <td>$477.086</td>
+    </tr><tr>
+      <td>MEDIOS DE ELEVACION</td>
+      <td>$89.912</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$89.912</td>
+    </tr><tr>
+      <td>CONTRAPISOS</td>
+      <td>$101.217</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$101.217</td>
+    </tr><tr>
+      <td>BANQUINAS</td>
+      <td>$1.395</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$1.395</td>
+    </tr><tr>
+      <td>CARPETA</td>
+      <td>$3.844</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$3.844</td>
+    </tr><tr>
+      <td>AISLACIONES HIDROFUGAS</td>
+      <td>$35.473</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$35.473</td>
+    </tr><tr>
+      <td>REVOQUES</td>
+      <td>$85.271</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$85.271</td>
+    </tr><tr>
+      <td>YESO</td>
+      <td>$69.695</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$69.695</td>
+    </tr><tr>
+      <td>PINTURA</td>
+      <td>$72.048</td>
+      <td>$78</td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--amber)">0.1%</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.1%;background:var(--amber)"></div></div>
+      </td>
+      <td class="amber">Iniciado</td>
+      <td>$71.970</td>
+    </tr><tr>
+      <td>PISOS</td>
+      <td>$215.384</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$215.384</td>
+    </tr><tr>
+      <td>REVESTIMIENTOS</td>
+      <td>$21.861</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$21.861</td>
+    </tr><tr>
+      <td>HERRERIA</td>
+      <td>$57.007</td>
+      <td>$2.894</td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--amber)">5.1%</div>
+        <div class="pbar"><div class="pbar-fill" style="width:5.1%;background:var(--amber)"></div></div>
+      </td>
+      <td class="amber">Iniciado</td>
+      <td>$54.113</td>
+    </tr><tr>
+      <td>CARPINTERIAS</td>
+      <td>$220.515</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$220.515</td>
+    </tr><tr>
+      <td>MESADAS</td>
+      <td>$67.265</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$67.265</td>
+    </tr><tr>
+      <td>MUEBLES DE COCINA Y LAVADERO</td>
+      <td>$61.564</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$61.564</td>
+    </tr><tr>
+      <td>PLACARES</td>
+      <td>$108.377</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$108.377</td>
+    </tr><tr>
+      <td>ARTEFACTOS DE SANITARIOS Y GRIFERIAS</td>
+      <td>$45.430</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$45.430</td>
+    </tr><tr>
+      <td>ARTEFACTOS DE COCINA</td>
+      <td>$19.679</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$19.679</td>
+    </tr><tr>
+      <td>CALEFACCION</td>
+      <td>$141.554</td>
+      <td><span class="muted">—</span></td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink)">—</div>
+        <div class="pbar"><div class="pbar-fill" style="width:0.0%;background:var(--ca)"></div></div>
+      </td>
+      <td class="">Pendiente</td>
+      <td>$141.554</td>
+    </tr><tr>
+      <td>GASTOS VARIOS DE OBRA</td>
+      <td>$100.367</td>
+      <td>$1.092</td>
+      <td class="bar-cell">
+        <div style="font-size:11.5px;font-weight:600;color:var(--amber)">1.1%</div>
+        <div class="pbar"><div class="pbar-fill" style="width:1.1%;background:var(--amber)"></div></div>
+      </td>
+      <td class="amber">Iniciado</td>
+      <td>$99.275</td>
+    </tr></tbody>
+        <tfoot><tr>
+          <td>TOTAL</td>
+          <td>$2.977.858</td>
+          <td>$340.743</td>
+          <td>11.4%</td>
+          <td class="green">Dentro del presupuesto</td>
+          <td>$2.637.115</td>
+        </tr></tfoot>
+      </table>
+    </div>
+    <div class="card">
+      <div class="ch">Cashflow proyectado</div>
+      <div class="cs">Azul = gasto real ejecutado · gris = presupuesto futuro pendiente · naranja = acumulado total proyectado</div>
+      <div class="cv" style="height:240px"><canvas id="chCF" width="1282" height="240" style="display: block; box-sizing: border-box; height: 240px; width: 1282px;"></canvas></div>
+    </div></div>
 
 <!-- EXPORT -->
 <div class="export-bar">
   <div class="export-info">
-    <span class="big" id="expCount">—</span>
-    pagos en la selección · <b id="expTotal">—</b> total U$S
-    <br><span id="expDesc" style="font-size:11px;color:var(--muted2)"></span>
+    <span class="big" id="expCount">65</span>
+    pagos en la selección · <b id="expTotal">$340.992</b> total U$S
+    <br><span id="expDesc" style="font-size:11px;color:var(--muted2)">Melian 3899 · 2023-06-22 → 2026-07-08</span>
   </div>
   <button class="btn btn-exp" id="btnExport">↓ Extraer datos a Excel</button>
 </div>
@@ -1059,6 +1348,8 @@ document.getElementById('file-input').addEventListener('change',e=>{
     const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',cellDates:false});
     const rows=fromSheet(wb);if(!rows.length){alert('No encontré columna "Sociedad".');return;}
     loadData(rows,'Datos: <b>'+f.name+'</b> ('+rows.length+' pagos)');
+    document.getElementById('btnDownload').disabled=false;
+    document.getElementById('btnDownload').style.opacity='1';
   }catch(err){alert('Error: '+err.message);}};
   r.readAsArrayBuffer(f);e.target.value='';});
 
@@ -1148,6 +1439,20 @@ async function doPublish(){
   }
 }
 
+
+/* ── DESCARGAR INDEX ACTUALIZADO ── */
+function downloadIndex(){
+  // Toma el HTML tal como está ahora en el DOM (con los datos del Excel cargado)
+  const content = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const blob    = new Blob([content], {type:'text/html;charset=utf-8'});
+  const url     = URL.createObjectURL(blob);
+  const a       = document.createElement('a');
+  a.href        = url;
+  a.download    = 'index.html';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
 </script>
-</body>
-</html>
+
+</body></html>
